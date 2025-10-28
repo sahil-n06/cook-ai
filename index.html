@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Cooknetic AI</title>
+  <style>
+    /* General Styling */
+    body {
+      margin: 0;
+      font-family: 'Orbitron', sans-serif; /* Futuristic font */
+      background: #121212;
+      color: #e0e0e0;
+      overflow-x: hidden;
+    }
+
+    /* Header */
+    header {
+      background-color: #1c1c1c;
+      padding: 1.5rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    }
+
+    .logo {
+      font-size: 2rem;
+      font-weight: bold;
+      color: #00ff99; /* Neon Green */
+      letter-spacing: 2px;
+      display: flex;
+      align-items: center;
+      text-transform: uppercase;
+    }
+
+    .logo img {
+      width: 30px;
+      margin-right: 8px;
+    }
+
+    /* Authentication Buttons */
+    .auth-buttons button {
+      margin-left: 10px;
+      background-color: #00ff99;
+      color: #121212;
+      border: none;
+      border-radius: 30px;
+      padding: 12px 20px;
+      font-weight: bold;
+      cursor: pointer;
+      text-transform: uppercase;
+      transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .auth-buttons button:hover {
+      background-color: #00cc80;
+      box-shadow: 0 0 10px 3px rgba(0, 255, 153, 0.6);
+    }
+
+    /* Main Section */
+    main {
+      max-width: 960px;
+      margin: 3rem auto;
+      text-align: center;
+    }
+
+    /* Kitchen Talk Section */
+    .kitchen-talk h2 {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      color: #00ff99;
+    }
+
+    .kitchen-talk p {
+      font-size: 1.2rem;
+      color: #bbbbbb;
+      margin-bottom: 1.5rem;
+    }
+
+    .kitchen-talk input {
+      padding: 15px;
+      width: 80%;
+      max-width: 450px;
+      margin: 1rem 0;
+      border-radius: 30px;
+      border: 2px solid #00ff99;
+      background-color: #222222;
+      color: #fff;
+      font-size: 1.2rem;
+      transition: border-color 0.3s ease;
+    }
+
+    .kitchen-talk input:focus {
+      border-color: #00cc80;
+      outline: none;
+    }
+
+    .kitchen-talk button {
+      padding: 12px 20px;
+      background-color: #00ff99;
+      color: #121212;
+      border: none;
+      border-radius: 30px;
+      cursor: pointer;
+      font-weight: bold;
+      text-transform: uppercase;
+      transition: background-color 0.3s ease, transform 0.3s ease;
+    }
+
+    .kitchen-talk button:hover {
+      background-color: #00cc80;
+      transform: scale(1.05);
+    }
+
+    /* Feature Cards Section */
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 2rem;
+      margin-top: 3rem;
+    }
+
+    .feature-card {
+      background-color: #222222;
+      padding: 1.5rem;
+      border-radius: 20px;
+      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.3);
+      font-weight: bold;
+      color: #00ff99;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+      text-align: center;
+      border: 2px solid #222222;
+    }
+
+    .feature-card:hover {
+      transform: scale(1.05);
+      box-shadow: 0 10px 30px rgba(0, 255, 153, 0.5);
+      background-color: #333333;
+      border-color: #00ff99;
+    }
+
+    .feature-card img {
+      width: 50px;
+      margin-bottom: 20px;
+      filter: hue-rotate(180deg);
+    }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 2rem;
+      font-size: 0.9rem;
+      color: #888888;
+      background-color: #1c1c1c;
+    }
+
+    .contact-btn {
+      margin-top: 2rem;
+      background-color: #00ff99;
+      border: none;
+      color: #121212;
+      padding: 14px 24px;
+      border-radius: 30px;
+      cursor: pointer;
+      font-size: 1.1rem;
+      transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .contact-btn:hover {
+      background-color: #00cc80;
+      box-shadow: 0 0 10px 3px rgba(0, 255, 153, 0.6);
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <img src="https://via.placeholder.com/30" alt="Cooknetic Logo" />
+    🍲 Cooknetic AI
+  </div>
+  <div class="auth-buttons">
+    <button>Login</button>
+    <button>Sign Up</button>
+  </div>
+</header>
+
+<main>
+  <div class="kitchen-talk">
+    <h2>👩‍🍳 Kitchen Talk</h2>
+    <p>
+      Talk to your kitchen coach like you would to your mom — casual and caring. Just say what you have and how you're feeling — Cooknetic will take care of the rest!
+    </p>
+    <input type="text" id="userInput" placeholder="Type ingredients or mood..." />
+    <button onclick="sendToMomMode()">Ask Kitchen</button>
+  </div>
+
+  <div class="feature-grid">
+    <div class="feature-card" onclick="window.location.href='zero_waste.html';">
+      <img src="https://via.placeholder.com/50/00FF99" alt="Zero Waste"/>
+      Zero-Waste AutoChef
+    </div>
+    <div class="feature-card" onclick="window.location.href='swap.html';">
+      <img src="https://via.placeholder.com/50/00FF99" alt="Nutrition"/>
+      Nutrition and Calorie Counter
+    </div>
+    <div class="feature-card" onclick="window.location.href='camera.html';">
+      <img src="https://via.placeholder.com/50/00FF99" alt="Live Camera"/>
+      Live Camera Recipe Generator
+    </div>
+    <div class="feature-card" onclick="window.location.href='voice.html';">
+      <img src="https://via.placeholder.com/50/00FF99" alt="Voice"/>
+      Voice Recipe Generator
+    </div>
+    <div class="feature-card" onclick="window.location.href='recipe.html';">
+      <img src="https://via.placeholder.com/50/00FF99" alt="Food Detector"/>
+      Food Detector - Image Uploader
+    </div>
+    <div class="feature-card" onclick="window.location.href='cultural.html';">
+      <img src="https://via.placeholder.com/50/00FF99" alt="Culture"/>
+      Cultural Context Explainer
+    </div>
+    <div class="feature-card" onclick="window.location.href='preditation.html';">
+      <img src="https://via.placeholder.com/50/00FF99" alt="Zodiac"/>
+      Dish Matcher Zodiac Sign
+    </div>
+    <div class="feature-card" onclick="window.location.href='engine.html';">
+      <img src="https://via.placeholder.com/50/00FF99" alt="Food Swap"/>
+      Food Swap Engine
+    </div>
+  </div>
+
+  <button class="contact-btn">Contact Us</button>
+</main>
+
+<footer>
+  ©️ 2025 Cooknetic AI — Made with ❤️ and Masala
+</footer>
+
+<script>
+  function sendToMomMode() {
+    const input = document.getElementById("userInput").value;
+    const encoded = encodeURIComponent(input);
+    window.location.href = `mom_mode.html?query=${encoded}`;
+  }
+</script>
+
+</body>
+</html>

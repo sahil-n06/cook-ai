@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>COOKINETIC AI - Nutrition & Calorie Analyzer</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background-color: #f5f5f5;
+    }
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+    input, button {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      font-size: 16px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+    .nutrition-info {
+      background-color: #f9f9f9;
+      margin-top: 20px;
+      padding: 15px;
+      border-radius: 5px;
+    }
+    .nutrition-info h3 {
+      color: #2c3e50;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>COOKINETIC AI - Nutrition & Calorie Analyzer</h1>
+    <p>Enter a dish, recipe name, or ingredients to analyze nutrition and calories:</p>
+    <input type="text" id="inputField" placeholder="Enter recipe or ingredients" />
+    <button onclick="analyzeNutrition()">Analyze Nutrition</button>
+    
+    <div id="nutritionContainer"></div>
+  </div>
+
+  <script>
+    // Replace with your Spoonacular API Key
+    const apiKey = '193177cf1cc2429ebd8d345f63c74d79';
+    const apiUrl = 'https://api.spoonacular.com/recipes/complexSearch';
+    const ingredientApiUrl = 'https://api.spoonacular.com/recipes/findByIngredients';
+
+    // Function to analyze nutrition and calories
+    async function analyzeNutrition() {
+      const input = document.getElementById('inputField').value.trim();
+      if (!input) {
+        alert('Please enter a dish, recipe, or ingredients!');
+        return;
+      }
+
+      const isIngredients = input.includes(',');
+      const inputQuery = input.split(',').map(item => item.trim()).join('+');
+
+      // Check if input is ingredients or a dish/recipe name
+      if (isIngredients) {
+        // Fetch by ingredients
+        fetchByIngredients(inputQuery);
+      } else {
+        // Fetch by dish/recipe name
+        fetchByRecipeName(inputQuery);
+      }
+    }
+
+    // Function to fetch recipe based on dish/recipe name
+    async function fetchByRecipeName(recipeName) {
+      const response = await fetch(`${apiUrl}?apiKey=${apiKey}&query=${recipeName}&number=1`);
+      const data = await response.json();
+
+      if (data.results && data.results.length > 0) {
+        const recipeId = data.results[0].id;
+        fetchNutrition(recipeId);
+      } else {
+        alert('Recipe not found. Try again!');
+      }
+    }
+
+    // Function to fetch recipe by ingredients
+    async function fetchByIngredients(ingredients) {
+      const response = await fetch(`${ingredientApiUrl}?apiKey=${apiKey}&ingredients=${ingredients}&number=1`);
+      const data = await response.json();
+
+      if (data && data.length > 0) {
+        const recipeId = data[0].id;
+        fetchNutrition(recipeId);
+      } else {
+        alert('No recipes found for the given ingredients. Try again!');
+      }
+    }
+
+    // Function to fetch nutrition info for a recipe
+    async function fetchNutrition(recipeId) {
+      const nutritionUrl = `https://api.spoonacular.com/recipes/${recipeId}/nutritionWidget.json?apiKey=${apiKey}`;
+      const response = await fetch(nutritionUrl);
+      const nutritionData = await response.json();
+
+      displayNutritionInfo(nutritionData);
+    }
+
+    // Function to display nutrition info
+    function displayNutritionInfo(nutritionData) {
+      const container = document.getElementById('nutritionContainer');
+      container.innerHTML = ''; // Clear previous results
+
+      const nutritionDiv = document.createElement('div');
+      nutritionDiv.classList.add('nutrition-info');
+
+      nutritionDiv.innerHTML = `
+        <h3>Nutrition Information</h3>
+        <p><strong>Calories:</strong> ${nutritionData.calories} kcal</p>
+        <p><strong>Total Fat:</strong> ${nutritionData.fat} g</p>
+        <p><strong>Carbohydrates:</strong> ${nutritionData.carbs} g</p>
+        <p><strong>Protein:</strong> ${nutritionData.protein} g</p>
+        <p><strong>Sugar:</strong> ${nutritionData.sugar} g</p>
+      `;
+
+      container.appendChild(nutritionDiv);
+    }
+  </script>
+</body>
+</htm>

@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Cooknetic AI – Camera Recipe Generator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f9; /* Changed background */
+      color: #000; /* Changed text color for visibility */
+      text-align: center;
+      padding: 20px;
+    }
+    video, canvas {
+      width: 90%;
+      max-width: 500px;
+      border-radius: 10px;
+      margin-bottom: 10px;
+    }
+    .container {
+      max-width: 700px;
+      margin: auto;
+      background: #ffffff; /* Lighter container */
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+    }
+    button {
+      background: #4CAF50;
+      border: none;
+      padding: 12px 20px;
+      color: white;
+      font-size: 16px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    ul {
+      text-align: left;
+      list-style: none;
+      padding: 0;
+    }
+    li {
+      background: #e0e0ef;
+      padding: 10px;
+      margin: 5px 0;
+      border-radius: 6px;
+      color: #000;
+    }
+    h2 {
+      color: #4CAF50;
+    }
+    a {
+      color: #1a0dab; /* Clear link color */
+    }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"></script>
+</head>
+<body>
+  <div class="container">
+    <h1>Cooknetic AI 🍽️</h1>
+    <video id="video" autoplay playsinline></video>
+    <canvas id="canvas" style="display:none;"></canvas>
+    <br>
+    <button onclick="captureAndGenerate()">📸 Detect & Get Recipes</button>
+
+    <div id="output" style="margin-top: 20px;">
+      <h2>Detected Ingredients</h2>
+      <ul id="ingredient-list"></ul>
+
+      <h2>Recipes</h2>
+      <ul id="recipe-list"></ul>
+    </div>
+  </div>
+
+  <script>
+    const apiKey = "193177cf1cc2429ebd8d345f63c74d79"; // 🔑 Replace with your key
+    const foodKeywords = ['apple', 'banana', 'orange', 'broccoli', 'carrot', 'cake', 'sandwich', 'pizza', 'hot dog', 'donut'];
+
+    const video = document.getElementById("video");
+    const canvas = document.getElementById("canvas");
+    const ctx = canvas.getContext("2d");
+    const ingredientList = document.getElementById("ingredient-list");
+    const recipeList = document.getElementById("recipe-list");
+
+    let model;
+
+    async function startCamera() {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      video.srcObject = stream;
+    }
+
+    async function loadModel() {
+      model = await cocoSsd.load();
+      console.log("Model loaded.");
+    }
+
+    async function captureAndGenerate() {
+      if (!model) {
+        alert("Model still loading, please wait...");
+        return;
+      }
+
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+      const predictions = await model.detect(canvas);
+      const items = predictions
+        .filter(p => p.score > 0.5)
+        .map(p => p.class)
+        .filter(i => foodKeywords.includes(i));
+
+      const uniqueIngredients = [...new Set(items)];
+      ingredientList.innerHTML = "";
+      recipeList.innerHTML = "";
+
+      if (!uniqueIngredients.length) {
+        ingredientList.innerHTML = "<li>No food items recognized.</li>";
+        return;
+      }
+
+      uniqueIngredients.forEach(ing => {
+        const li = document.createElement("li");
+        li.textContent = ing;
+        ingredientList.appendChild(li);
+      });
+
+      try {
+        const res = await fetch(`https://api.spoonacular.com/recipes/findByIngredients?ingredients=${uniqueIngredients.join(',')}&number=5&apiKey=${apiKey}`);
+        const data = await res.json();
+
+        data.forEach(recipe => {
+          const li = document.createElement("li");
+          li.innerHTML = `<strong>${recipe.title}</strong><br><img src="${recipe.image}" width="100"/><br><a href="https://spoonacular.com/recipes/${recipe.title.toLowerCase().replace(/ /g, '-')}-${recipe.id}" target="_blank">View Recipe</a>`;
+          recipeList.appendChild(li);
+        });
+      } catch (err) {
+        console.error(err);
+        recipeList.innerHTML = "<li>Error fetching recipes. Check API key or internet.</li>";
+      }
+    }
+
+    startCamera();
+    loadModel();
+  </script>
+</body>
+</html>
+
+    

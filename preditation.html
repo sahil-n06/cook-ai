@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dish Personality Matcher</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #fffaf0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .container {
+      background: #ffe4b5;
+      padding: 30px;
+      border-radius: 20px;
+      text-align: center;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      max-width: 400px;
+      width: 100%;
+    }
+
+    input, select, button {
+      margin: 10px 0;
+      padding: 10px;
+      width: 100%;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      font-size: 1rem;
+    }
+
+    button {
+      background-color: #ff7f50;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #ff6347;
+    }
+
+    .result {
+      margin-top: 20px;
+      font-size: 1.2rem;
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>✨ Dish Personality Matcher ✨</h1>
+    <p>Enter your name or select your zodiac sign to find your dish twin!</p>
+
+    <input type="text" id="nameInput" placeholder="Enter your name">
+    
+    <select id="zodiacSelect">
+      <option value="">-- Or select zodiac sign --</option>
+      <option value="aries">Aries</option>
+      <option value="taurus">Taurus</option>
+      <option value="gemini">Gemini</option>
+      <option value="cancer">Cancer</option>
+      <option value="leo">Leo</option>
+      <option value="virgo">Virgo</option>
+      <option value="libra">Libra</option>
+      <option value="scorpio">Scorpio</option>
+      <option value="sagittarius">Sagittarius</option>
+      <option value="capricorn">Capricorn</option>
+      <option value="aquarius">Aquarius</option>
+      <option value="pisces">Pisces</option>
+    </select>
+
+    <button onclick="matchDish()">Find My Dish</button>
+
+    <div id="resultBox" class="result"></div>
+  </div>
+
+  <script>
+    // Mapping zodiac to dishes
+    const zodiacDishMap = {
+      aries: "Spicy Paneer Tikka - Bold and fiery, just like you!",
+      taurus: "Creamy Butter Chicken - Rich, comforting, and dependable.",
+      gemini: "Chatpata Bhel Puri - Full of surprises and super fun!",
+      cancer: "Khichdi - Warm, nurturing, and full of love.",
+      leo: "Shahi Paneer - Royal, vibrant, and hard to ignore!",
+      virgo: "Steamed Idli - Simple, clean, and elegant.",
+      libra: "Veg Pulao - Balanced, colorful, and everyone loves you.",
+      scorpio: "Dark Chocolate Cake - Mysterious, intense, unforgettable.",
+      sagittarius: "Mexican Tacos - Adventurous and free-spirited.",
+      capricorn: "Rajma Chawal - Classic, reliable, and comforting.",
+      aquarius: "Avocado Sushi - Unique, fresh, and futuristic.",
+      pisces: "Thai Green Curry - Dreamy, soulful, and full of flavor."
+    };
+
+    // Function to match dish based on input (name or zodiac)
+    function matchDish() {
+      const name = document.getElementById('nameInput').value.trim();
+      const zodiac = document.getElementById('zodiacSelect').value;
+      const resultBox = document.getElementById('resultBox');
+
+      if (zodiac) {
+        resultBox.innerText = zodiacDishMap[zodiac];
+      } else if (name) {
+        // Match dish based on the first letter of the name
+        const index = name.charCodeAt(0) % Object.keys(zodiacDishMap).length;
+        const zodiacKeys = Object.keys(zodiacDishMap);
+        const matchedZodiac = zodiacKeys[index];
+        resultBox.innerText = zodiacDishMap[matchedZodiac];
+      } else {
+        resultBox.innerText = "Please enter a name or select a zodiac sign!";
+      }
+    }
+  </script>
+</body>
+</html>

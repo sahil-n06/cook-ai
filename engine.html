@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Nutrient Swap Finder</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background: #f9f9f9;
+    }
+    h1 {
+      color: #2c3e50;
+    }
+    input, button {
+      padding: 10px;
+      font-size: 16px;
+      margin-top: 10px;
+    }
+    #result {
+      margin-top: 20px;
+      background: #ecf0f1;
+      padding: 15px;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Nutrient Swap Suggestion Tool</h1>
+  <p>Enter an ingredient to see healthier or alternative nutrient swaps:</p>
+  <input type="text" id="ingredientInput" placeholder="e.g. butter, white rice" />
+  <button onclick="findSwap()">Find Swap</button>
+
+  <div id="result"></div>
+
+ <script>
+  const nutrientSwaps = {
+  "butter": "Avocado, olive oil, or unsweetened applesauce (for baking)",
+  "white rice": "Brown rice, quinoa, or cauliflower rice",
+  "sugar": "Stevia, honey, or jaggery",
+  "milk": "Almond milk, soy milk, or skimmed milk",
+  "maida": "Whole wheat flour, oat flour, or almond flour",
+  "salt": "Herbs, lemon juice, or potassium salt",
+  "potatoes": "Sweet potatoes or turnips",
+  "ghee": "Olive oil, avocado oil, or nut butters",
+  "cream": "Greek yogurt or blended tofu",
+  "cheese": "Cottage cheese, paneer (low fat), or nutritional yeast",
+  "fried snacks": "Roasted chickpeas or baked veggie chips",
+  "bread": "Whole wheat bread or multigrain bread",
+  "jam": "Mashed fruit or nut butter",
+  "mayonnaise": "Greek yogurt or hummus",
+  "soda": "Sparkling water or infused water",
+  "ice cream": "Frozen banana puree or low-fat yogurt",
+  "chocolate": "Dark chocolate (70%+ cocoa) or cacao nibs",
+  "ketchup": "Homemade tomato puree or salsa",
+  "instant noodles": "Whole wheat noodles or zucchini noodles",
+  "pasta": "Chickpea pasta or spiralized zucchini",
+  "meat": "Chicken, turkey, tofu, or mushrooms",
+  "cornflakes": "Oats or bran flakes",
+  "vegetable oil": "Olive oil or mustard oil (cold-pressed)",
+  "paneer": "Tofu or low-fat paneer",
+  "eggs": "Egg whites or flaxseed eggs",
+  "soups": "Vegetable purees with stock",
+  "sweetened yogurt": "Plain yogurt with fruits",
+  "sausages": "Grilled tofu or mushroom patties",
+  "processed meat": "Grilled chicken or lentil patties",
+  "coconut milk": "Almond milk or light coconut milk",
+  "desserts": "Fruit salads or yogurt parfaits",
+  "pizza base": "Cauliflower crust or whole wheat base",
+  "paratha": "Multigrain roti or baked paratha",
+  "white flour pasta": "Whole wheat or legume-based pasta",
+  "nachos": "Baked tortillas or roasted lotus seeds",
+  "chips": "Baked sweet potato chips or carrot sticks",
+  "chicken": "Skinless chicken breast",
+  "margarine": "Mashed avocado or nut butters",
+  "ice cream bars": "Frozen fruit bars or smoothie popsicles",
+  "sweetened cereal": "Steel cut oats or homemade muesli",
+  "energy drinks": "Coconut water or lemon water",
+  "sweet lassi": "Salted lassi or buttermilk",
+  "white pasta sauce": "Tomato sauce or hummus-based sauces",
+  "instant coffee": "Fresh brewed or green tea",
+  "flavored yogurt": "Plain yogurt with real fruits",
+  "syrup": "Date syrup or molasses",
+  "gravy mixes": "Homemade with spices and tomato base",
+  "store dressings": "Homemade olive oil-lemon dressing",
+  "bread crumbs": "Oats or crushed cornflakes",
+  "aloo tikki": "Sweet potato tikki or lentil patties",
+  "halwa": "Carrot halwa with jaggery or fruit halwa",
+  "gulab jamun": "Baked gulab jamun or fruit-based sweets",
+  "kaju katli": "Homemade almond bars with less sugar",
+  "namkeen": "Roasted chana or trail mix",
+  "samosa": "Baked samosa or stuffed whole wheat wraps",
+  "pav bhaji": "Less butter, more veggies version",
+  "white chocolate": "Dark chocolate or carob chips",
+  "sweet corn": "Roasted corn with lime",
+  "bhujia": "Roasted lentils or spiced puffed rice",
+  "refined oil": "Cold-pressed oils or ghee in moderation",
+  "banana chips": "Dried banana slices (unsweetened)",
+  "sweet buns": "Whole wheat muffins or energy balls",
+  "white naan": "Whole wheat naan or roti",
+  "fried poori": "Baked poori or chapati",
+  "mitha dahi": "Plain dahi with fruit puree",
+  "chocolate spread": "Nut butter with cocoa and no sugar",
+  "sev": "Roasted peanuts or crunchy moong dal",
+  "milk chocolate": "Dark chocolate or fruit bites",
+  "sabudana vada": "Baked version or grilled tikki",
+  "kachori": "Baked kachori or stuffed roti",
+  "butter chicken": "Grilled chicken in tomato-yogurt curry",
+  "milkshake": "Smoothie with almond milk and fruit",
+  "jalebi": "Baked spirals with honey or dates",
+  "lassi": "Low-sugar buttermilk or mint chaas",
+  "sweet suji": "Low-sugar suji with fruits",
+  "mithai": "Dates and nut energy balls",
+  "bread pakora": "Baked sandwich or toast with filling",
+  "kulfi": "Almond milk popsicle or fruit ice",
+  "roohafza": "Fruit-infused water or hibiscus tea",
+  "candy": "Raisins or dried apricot",
+  "idli": "Ragi idli or oats idli",
+  "dosa": "Moong dal dosa or oats dosa",
+  "pickle": "Homemade low-oil pickle or fresh chutney",
+  "white sugar syrup": "Jaggery syrup or date syrup",
+  "rasgulla": "Baked rasgulla or cottage cheese balls in light syrup",
+  "corn syrup": "Honey, jaggery syrup, or date syrup",
+  "tea with sugar": "Green tea or tea with stevia/jaggery",
+  "maggi": "Whole wheat or millet noodles with veggies",
+  "burger": "Whole grain bun with grilled veggie or bean patty",
+  "french fries": "Baked sweet potato fries or air-fried potato wedges",
+  "pancakes": "Oats or banana pancakes",
+  "waffles": "Whole wheat or almond flour waffles",
+  "shezwan sauce": "Homemade spicy chutney with less oil",
+  "butterscotch syrup": "Date caramel or mashed banana topping",
+  "falooda": "Chia seed fruit bowl with almond milk",
+  "ice gola": "Crushed ice with real fruit juice",
+  "butter naan": "Whole wheat naan with ghee",
+  "rasmalai": "Low-fat paneer in almond milk",
+  "moong dal halwa": "Low ghee moong dal halwa with jaggery",
+  "white sauce": "Cauliflower puree or yogurt-based sauce",
+  "biryani": "Brown rice or millet biryani with less oil",
+  "kulcha": "Multigrain kulcha or roti",
+  "coffee creamer": "Coconut milk or almond milk",
+  "milk powder": "Coconut powder or soy milk powder",
+  "condensed milk": "Thick almond paste with dates",
+  "custard": "Cornstarch-free fruit custard with almond milk",
+  "bread roll": "Baked vegetable roll with whole wheat bread",
+  "peda": "Date and nut peda",
+  "barfi": "Coconut or almond barfi with jaggery",
+  "pastry": "Whole wheat sponge cake with fruit topping",
+  "biscuits": "Homemade oat cookies or nut bars",
+  "khari": "Baked puff with whole wheat flour and olive oil",
+  "chivda": "Roasted chivda with puffed rice and nuts",
+  "murukku": "Baked murukku with millet flour",
+  "chakli": "Air-fried version with multigrain flour",
+   "mutton": "Lean goat meat or grilled lamb with less fat",
+  "beef": "Lean cuts or grilled steak (in moderation)",
+  "pork": "Grilled pork tenderloin or turkey bacon",
+  "bacon": "Turkey bacon or smoked tofu strips",
+  "fish fry": "Grilled or baked fish with herbs",
+  "fried prawns": "Steamed or grilled prawns with lemon",
+  "fish fingers": "Baked fish sticks with whole grain coating",
+  "chicken nuggets": "Baked chicken bites or tofu nuggets",
+  "kebabs": "Grilled chicken or mushroom kebabs",
+  "keema": "Lean chicken keema or soy granules",
+  "mayo chicken": "Yogurt-marinated chicken",
+  "butter prawns": "Grilled prawns in garlic olive oil",
+  "egg curry": "Boiled egg curry with less oil",
+  "chicken curry": "Skinless chicken in tomato-yogurt gravy",
+  "fried fish": "Baked or grilled fish with lemon-pepper rub",
+  "liver fry": "Lean sautéed liver with minimal oil",
+  "meatballs": "Baked turkey or chicken meatballs",
+  "shawarma": "Grilled chicken wrap in whole wheat pita",
+  "chicken popcorn": "Baked or air-fried chicken cubes",
+  "ham": "Grilled lean ham or smoked tofu slices"
+  };
+
+  function findSwap() {
+    const input = document.getElementById("ingredientInput").value.trim().toLowerCase();
+    const resultDiv = document.getElementById("result");
+    let found = false;
+
+    for (const ingredient in nutrientSwaps) {
+      if (ingredient.toLowerCase() === input) {
+        resultDiv.innerHTML = `<strong>Alternative for <em>${ingredient}</em>:</strong><br>${nutrientSwaps[ingredient]}`;
+        found = true;
+        break;
+      }
+    }
+
+    if (!found) {
+      resultDiv.innerHTML = `<strong>No nutrient swap found for:</strong> ${input}. Please try another ingredient.`;
+    }
+  }
+</script>

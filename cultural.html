@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Spice Context Explainer</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #fffaf3;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .container {
+      background-color: white;
+      padding: 2rem;
+      border-radius: 16px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      width: 480px;
+      text-align: center;
+    }
+    input {
+      width: 85%;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+    button {
+      padding: 10px 20px;
+      border: none;
+      background-color: #ff7b00;
+      color: white;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    button:hover {
+      background-color: #ff9d3b;
+    }
+    #result {
+      margin-top: 20px;
+      font-size: 1rem;
+      text-align: left;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🌍 Spice Context Explainer</h1>
+    <input type="text" id="ingredientInput" placeholder="Enter a spice (e.g., cumin)" />
+    <button onclick="getContext()">Explain</button>
+    <div id="result"></div>
+  </div>
+
+  <script>
+    const culturalContextDB = {
+      turmeric: "Turmeric (Haldi) is a sacred Indian spice used in cooking, medicine, and rituals. It provides a yellow color and is valued for its healing properties.",
+      cumin: "Cumin (Jeera) is widely used in Indian and Mexican cuisines for its warm, earthy flavor. It also aids digestion.",
+      coriander: "Coriander (Dhaniya) is used in seed and leaf form in Indian and international cooking for its citrusy aroma.",
+      cardamom: "Cardamom (Elaichi) is known as the queen of spices in India, used in sweets, teas, and biryani.",
+      clove: "Clove (Laung) is a warm, pungent spice used in masala chai, biryani, and international baking.",
+      cinnamon: "Cinnamon (Dalchini) is used in Indian desserts and curries, as well as in Western sweets like cinnamon rolls.",
+      mustard_seed: "Mustard seeds (Rai) are used in Indian tempering and pickles, with a sharp, tangy flavor.",
+      fenugreek: "Fenugreek (Methi) has a bitter taste and is used in Indian curries, pickles, and Ayurvedic remedies.",
+      asafoetida: "Asafoetida (Hing) is essential in Indian vegetarian dishes for its umami flavor and digestive benefits.",
+      red_chili: "Red chili powder adds heat to Indian curries and is widely used in global cuisines like Mexican and Thai.",
+      black_pepper: "Black pepper (Kali Mirch) is a globally loved spice from India, used in spice blends and to add pungency.",
+      bay_leaf: "Bay leaves (Tej Patta) add fragrance to Indian rice dishes and stews, and are also common in European cooking.",
+      curry_leaves: "Curry leaves are vital in South Indian cooking, added to tempering for their aromatic and herbal note.",
+      ajwain: "Ajwain (Carom seeds) are used in Indian breads and digestive snacks for their strong thyme-like flavor.",
+      nigella: "Nigella (Kalonji) is used in pickles and naan, offering a slightly bitter, oniony flavor.",
+      sesame: "Sesame seeds (Til) are used in Indian sweets and Middle Eastern tahini.",
+      saffron: "Saffron (Kesar) is used in biryani and sweets across India, Iran, and Spain, known for its golden color and aroma.",
+      tamarind: "Tamarind (Imli) adds tanginess to Indian chutneys, sambar, and is also used in Thai and Mexican dishes.",
+      mango_powder: "Mango powder (Amchur) gives a sour note to Indian street food and North Indian curries.",
+      fennel: "Fennel seeds (Saunf) are chewed after meals in India and also used in baking and sausage making in the West.",
+      star_anise: "Star anise is used in biryani and Chinese five-spice mix for its licorice-like flavor.",
+      dried_ginger: "Dried ginger (Sonth) is used in chai and sweets, especially in winter.",
+      rock_salt: "Rock salt (Kala Namak) has a sulfuric flavor and is used in Indian chaats and digestive mixes.",
+      nutmeg: "Nutmeg (Jaiphal) is used in Indian desserts and global holiday baking.",
+      mace: "Mace (Javitri) is the outer covering of nutmeg, used in garam masala and rich meat dishes.",
+      paprika: "Paprika is widely used in Hungarian and Spanish dishes, adding sweetness or heat depending on type.",
+      oregano: "Oregano is a key herb in Italian and Mediterranean cooking, often used in pizza and sauces.",
+      basil: "Basil is central to Italian pesto and tomato sauces, and is also used fresh in Thai dishes.",
+      rosemary: "Rosemary is used in Mediterranean roasts and stews for its pine-like aroma.",
+      thyme: "Thyme is used in French, Greek, and Indian fusion dishes for its earthy taste.",
+      parsley: "Parsley is used as garnish and in salads and sauces across Europe and the Middle East.",
+      dill: "Dill is used in pickles, salads, and Scandinavian seafood dishes.",
+      lemongrass: "Lemongrass is used in Thai soups and curries for a citrusy zing.",
+      soy_sauce: "Soy sauce is a salty, umami-rich liquid used in East Asian stir-fries and marinades.",
+      ginger: "Ginger is used fresh or powdered in Indian curries, Chinese stir-fries, and herbal remedies worldwide.",
+      garlic: "Garlic is a global spice, used in Indian tadka, Italian pasta, and Chinese sauces.",
+      mint: "Mint (Pudina) is used in Indian chutneys and beverages, and as a fresh garnish worldwide.",
+      pomegranate_powder: "Anardana adds sweet-tartness to Indian chutneys and spice blends like chaat masala.",
+      black_cardamom: "Black cardamom (Badi Elaichi) is smoky and bold, used in meat dishes and garam masala.",
+      kokum: "Kokum is used in Goan and Maharashtrian curries to provide a natural sour flavor.",
+      garam_masala: "Garam masala is a warm, aromatic Indian spice blend made from cardamom, cinnamon, clove, cumin, and more, used in countless Indian curries and gravies.",
+      chaat_masala: "Chaat masala is a tangy, salty, spicy Indian spice mix used on snacks, fruits, and salads to add zest and punch.",
+      kitchen_king: "Kitchen King masala is a proprietary blend used in North Indian-style curries to provide a complex flavor and bright color.",
+      pav_bhaji_masala: "Pav Bhaji masala is a Mumbai-style spice mix used specifically in mashed vegetable dishes like pav bhaji.",
+      sambhar_masala: "Sambhar masala is a South Indian spice mix used to prepare sambhar, a lentil-based vegetable stew.",
+      tandoori_masala: "Tandoori masala is a spicy blend used in marinades for grilled Indian dishes like tandoori chicken and paneer tikka."
+    };
+
+    function getContext() {
+      const input = document.getElementById("ingredientInput").value.trim().toLowerCase().replace(/\s+/g, "_");
+      const resultDiv = document.getElementById("result");
+
+      if (!input) {
+        resultDiv.innerHTML = "Please enter a spice.";
+        return;
+      }
+
+      resultDiv.innerHTML = "Searching...";
+
+      setTimeout(() => {
+        const context = culturalContextDB[input];
+        if (context) {
+          resultDiv.innerHTML = `<strong>${input.replace(/_/g, " ")}</strong><br/>${context}`;
+        } else {
+          resultDiv.innerHTML = "Sorry, no cultural context found for that spice.";
+        }
+      }, 500);
+    }
+  </script>
+</body>
+</html>

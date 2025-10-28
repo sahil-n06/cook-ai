@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CookneticAI 🍳</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"></script>
+</head>
+<body class="bg-orange-50 flex items-center justify-center min-h-screen">
+  <div class="bg-white p-8 rounded-xl shadow-xl w-full max-w-xl">
+    <h1 class="text-3xl font-bold text-orange-600 mb-6 text-center">ScannerAI 🍳</h1>
+
+    <!-- Image upload -->
+    <input type="file" id="imageInput" accept="image/*" class="mb-4 w-full border p-2 rounded"/>
+
+    <!-- Scan Button -->
+    <button onclick="scanImage()" class="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded mb-4">
+      Scan Fridge Image
+    </button>
+
+    <!-- Ingredient Result -->
+    <div id="scanResult" class="bg-blue-50 text-blue-800 p-4 rounded mb-4 hidden"></div>
+
+    <!-- Generate Recipe Button -->
+    <button onclick="generateRecipe()" class="w-full bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded mb-4">
+      Cook for Me
+    </button>
+
+    <!-- Detected Ingredients -->
+    <div class="mt-4">
+      <h2 class="text-xl font-semibold text-green-700 mb-2">🍽️ Scanned Ingredients:</h2>
+      <div id="recipeResult" class="bg-green-100 text-green-800 p-4 rounded border border-green-200 min-h-[45px] whitespace-pre-wrap"></div>
+    </div>
+
+    <!-- Generated Recipe -->
+    <div class="mt-4">
+      <h2 class="text-xl font-semibold text-green-700 mb-2">🍽️ Recipes for You:</h2>
+      <div id="finalRecipeResult" class="space-y-4"></div>
+    </div>
+  </div>
+
+  <!-- Hidden canvas for TensorFlow detection -->
+  <canvas id="hiddenCanvas" style="display:none;"></canvas>
+
+  <script>
+    let model;
+    let detectedIngredients = [];
+
+    const foodKeywords = [
+      'banana', 'apple', 'orange', 'broccoli', 'carrot',
+      'hot dog', 'pizza', 'cake', 'sandwich', 'bowl', 'cup'
+    ];
+
+    const SPOONACULAR_API_KEY = "193177cf1cc2429ebd8d345f63c74d79"; // ← Replace with your real API key
+
+    cocoSsd.load().then(m => {
+      model = m;
+      console.log("COCO-SSD model loaded.");
+    });
+
+    async function scanImage() {
+      const input = document.getElementById('imageInput');
+      const canvas = document.getElementById('hiddenCanvas');
+      const ctx = canvas.getContext('2d');
+      const resultBox = document.getElementById('scanResult');
+
+      if (!input.files || !input.files[0]) {
+        alert("Please upload an image first.");
+        return;
+      }
+
+      const img = new Image();
+      img.src = URL.createObjectURL(input.files[0]);
+
+      img.onload = async () => {
+        canvas.width = img.width;
+        canvas.height = img.height;
+        ctx.drawImage(img, 0, 0, img.width, img.height);
+
+        if (!model) {
+          alert("Model not loaded yet. Please wait a moment.");
+          return;
+        }
+
+        const predictions = await model.detect(canvas);
+        const filtered = predictions
+          .filter(p => p.score > 0.5)
+          .map(p => p.class)
+          .filter(p => foodKeywords.includes(p));
+
+        detectedIngredients = [...new Set(filtered)];
+
+        if (detectedIngredients.length > 0) {
+          resultBox.classList.remove('hidden');
+          resultBox.innerHTML = `<strong>Detected:</strong> ${detectedIngredients.join(', ')}`;
+          document.getElementById('recipeResult').textContent = detectedIngredients.join(', ');
+        } else {
+          resultBox.classList.remove('hidden');
+          resultBox.innerHTML = "No food items detected.";
+          document.getElementById('recipeResult').textContent = '';
+        }
+      };
+    }
+
+    async function generateRecipe() {
+      const recipeBox = document.getElementById('finalRecipeResult');
+      recipeBox.innerHTML = "";
+
+      if (!detectedIngredients.length) {
+        recipeBox.textContent = "No ingredients found to generate a recipe.";
+        return;
+      }
+
+      const ingredientsQuery = detectedIngredients.join(',+');
+      const url = `https://api.spoonacular.com/recipes/findByIngredients?ingredients=${ingredientsQuery}&number=3&ranking=2&apiKey=${SPOONACULAR_API_KEY}`;
+
+      try {
+        const res = await fetch(url);
+        const data = await res.json();
+
+        if (data.length === 0) {
+          recipeBox.innerHTML = "No recipes found.";
+          return;
+        }
+
+        data.forEach(recipe => {
+          const el = document.createElement("div");
+          el.className = "p-4 bg-white rounded shadow border";
+          el.innerHTML = `
+            <h3 class="text-lg font-bold text-green-700 mb-2">${recipe.title}</h3>
+            <img src="${recipe.image}" class="w-full max-h-48 object-cover rounded mb-2"/>
+            <p><strong>Used Ingredients:</strong> ${recipe.usedIngredientCount}</p>
+            <p><strong>Missed Ingredients:</strong> ${recipe.missedIngredientCount}</p>
+            <a href="https://spoonacular.com/recipes/${recipe.title.replaceAll(' ', '-')}-${recipe.id}" 
+               target="_blank" class="text-blue-500 underline mt-2 inline-block">View Full Recipe</a>
+          `;
+          recipeBox.appendChild(el);
+        });
+
+      } catch (err) {
+        console.error(err);
+        recipeBox.textContent = "Error fetching recipe. Check your API key or network.";
+      }
+    }
+  </script>
+</body>
+</html>

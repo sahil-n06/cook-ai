@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Recipe Suggester</title>
+  <style>
+    body {
+      background-color: #1e1e2f;
+      font-family: 'Poppins', sans-serif;
+      color: #f5f5f5;
+      text-align: center;
+      padding: 20px;
+    }
+    h1 {
+      color: #fdd835;
+      margin-bottom: 10px;
+    }
+    p {
+      color: #e0e0e0;
+    }
+    input {
+      padding: 10px;
+      width: 300px;
+      font-size: 16px;
+      border-radius: 8px;
+      border: 1px solid #444;
+      background-color: #2d2d44;
+      color: #f5f5f5;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      margin-top: 10px;
+      border: none;
+      background-color: #ff4081;
+      color: white;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    button:hover {
+      background-color: #f50057;
+    }
+    h2 {
+      color: #ffca28;
+    }
+    .food-gallery {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin: 20px 0;
+      gap: 15px;
+    }
+    .food-gallery img {
+      width: 150px;
+      height: 100px;
+      object-fit: cover;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+    }
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+    li {
+      background: #2a2a40;
+      margin: 15px auto;
+      padding: 15px;
+      width: 80%;
+      max-width: 500px;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+      text-align: left;
+      color: #e0e0e0;
+    }
+    li strong {
+      font-size: 18px;
+    }
+    li img {
+      max-width: 100%;
+      border-radius: 10px;
+      margin-top: 10px;
+    }
+  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <h1>ZERO WASTE COOKNETIC CHEF</h1>
+  <p>Enter the ingredients that you left</p>
+  <input type="text" id="ingredientsInput" placeholder="e.g. tomato, onion, egg">
+  <br>
+  <button onclick="getRecipes()">Get your Recipes</button>
+
+<div class="food-gallery">
+    <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=400&q=80" alt="Food 1">
+  <img src="https://images.unsplash.com/photo-1506084868230-bb9d95c24759?auto=format&fit=crop&w=400&q=80" alt="Food 3">
+  <img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=400&q=80" alt="Food 4">
+    <img src="https:  //images.unsplash.com/photo-1600891964599-f61ba0e24092?auto=format&fit=crop&w=400&q=80" alt="Food 2">
+    <img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=400&q=80" alt="Food 4">
+  </div>
+
+  <h2>Turn leftovers into something legendary!</h2>
+  <ul id="recipeList"></ul>
+
+  <script>
+    async function getRecipes() {
+      const ingredients = document.getElementById("ingredientsInput").value;
+      const apiKey = '193177cf1cc2429ebd8d345f63c74d79'; // Replace with your own key if needed
+      const url = `https://api.spoonacular.com/recipes/findByIngredients?ingredients=${encodeURIComponent(ingredients)}&number=5&apiKey=${apiKey}`;
+
+      const response = await fetch(url);
+      const data = await response.json();
+
+      const list = document.getElementById("recipeList");
+      list.innerHTML = '';
+
+      data.forEach(recipe => {
+        const item = document.createElement("li");
+        item.innerHTML = `<strong>${recipe.title}</strong><br><img src="${recipe.image}" alt="${recipe.title}">`;
+        list.appendChild(item);
+      });
+    }
+  </script>
+
+</body>
+</html>

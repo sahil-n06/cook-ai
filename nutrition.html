@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Ingredient Substitute Finder - Cognetic AI</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f7f7f7;
+      padding: 20px;
+    }
+    .container {
+      max-width: 800px;
+      margin: auto;
+      background: #ffffff;
+      border-radius: 8px;
+      box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+      color: #333333;
+    }
+    input, button {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      font-size: 16px;
+      border-radius: 5px;
+      border: 1px solid #cccccc;
+    }
+    button {
+      background-color: #28a745;
+      color: white;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #218838;
+    }
+    .result {
+      margin-top: 20px;
+      background: #eaf9ea;
+      padding: 15px;
+      border-left: 4px solid #28a745;
+      border-radius: 5px;
+    }
+    .no-result {
+      margin-top: 20px;
+      background: #f9eaea;
+      padding: 15px;
+      border-left: 4px solid #e03e2d;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>Ingredient Substitute Finder</h1>
+    <p>Enter any Indian ingredient to find its alternatives:</p>
+    <input type="text" id="ingredientInput" placeholder="e.g., garam masala, paneer, tamarind">
+    <button onclick="findSubstitute()">Find Substitute</button>
+    <div id="result" class="result"></div>
+  </div>
+
+  <script>
+    const substitutions = {
+      // Vegetables
+      "potato": ["sweet potato", "cauliflower", "turnip"],
+      "tomato": ["red bell pepper puree", "pumpkin puree", "tomato paste"],
+      "onion": ["leeks", "shallots", "green onions"],
+      "garlic": ["garlic powder", "onion paste", "shallots"],
+      "spinach": ["kale", "mustard greens", "lettuce"],
+      "cauliflower": ["broccoli", "cabbage", "zucchini"],
+      "brinjal": ["zucchini", "bell pepper", "pumpkin"],
+      "okra": ["green beans", "zucchini", "asparagus"],
+      "cabbage": ["lettuce", "bok choy", "kale"],
+      "pumpkin": ["squash", "sweet potato", "zucchini"],
+      "methi": ["spinach", "mustard greens", "kale"],
+      "tinda": ["round zucchini", "ash gourd", "baby pumpkin"],
+      "lauki": ["zucchini", "cucumber", "pumpkin"],
+
+      // Fruits
+      "mango": ["papaya", "peach", "nectarine"],
+      "banana": ["applesauce", "mashed avocado", "pumpkin puree"],
+      "apple": ["pear", "peach", "plum"],
+      "pear": ["apple", "banana", "peach"],
+      "pineapple": ["mango", "orange", "papaya"],
+      "orange": ["tangerine", "clementine", "grapefruit"],
+      "papaya": ["mango", "melon", "peach"],
+      "watermelon": ["cantaloupe", "honeydew", "papaya"],
+      "lemon": ["lime", "vinegar", "tamarind paste"],
+
+      // Spices
+      "turmeric": ["curry powder", "saffron", "annatto"],
+      "cumin": ["caraway seeds", "ground coriander", "chili powder"],
+      "coriander": ["parsley", "celery leaves", "basil"],
+      "hing": ["garlic + onion mix", "leeks", "shallots"],
+      "mustard seeds": ["horseradish", "wasabi", "mustard paste"],
+      "fenugreek": ["maple syrup", "mustard seeds", "curry powder"],
+      "amchur": ["tamarind powder", "lemon juice", "vinegar"],
+      "garam masala": ["curry powder", "all spice blend", "clove + cumin + coriander combo"],
+      "clove": ["allspice", "cinnamon", "nutmeg"],
+      "cinnamon": ["nutmeg", "clove", "allspice"],
+
+      // Dairy Products
+      "milk": ["almond milk", "soy milk", "coconut milk"],
+      "yogurt": ["buttermilk", "sour cream", "coconut yogurt"],
+      "paneer": ["tofu", "cottage cheese", "halloumi"],
+      "ghee": ["butter", "coconut oil", "vegetable oil"],
+      "cream": ["evaporated milk", "greek yogurt", "coconut cream"],
+
+      // General   "bamboo shoots": ["water chestnuts", "mushrooms", "carrots"],
+            "basil": ["oregano", "thyme", "mint"],
+            "bitter gourd": ["cucumber", "spinach", "green bell pepper"],
+            "boiled egg": ["scrambled egg", "tofu", "avocado"],
+            "cabbage": ["spinach", "kale", "lettuce"],
+            "cardamom": ["cinnamon", "cloves", "allspice"],
+            "carrot": ["sweet potato", "parsnip", "butternut squash"],
+            "cauliflower": ["broccoli", "cabbage", "zucchini"],
+            "chana dal": ["moong dal", "toor dal", "yellow split peas"],
+            "chili powder": ["paprika", "cayenne pepper", "chili flakes"]
+      "sugar": ["jaggery", "honey", "maple syrup"],
+      "flour": ["almond flour", "oat flour", "whole wheat flour"],
+      "rice": ["quinoa", "couscous", "millet"]
+    };
+
+    function findSubstitute() {
+      const input = document.getElementById('ingredientInput').value.trim().toLowerCase();
+      const resultDiv = document.getElementById('result');
+
+      if (!input) {
+        resultDiv.innerHTML = `<div class="no-result">Please enter an ingredient name!</div>`;
+        return;
+      }
+
+      if (substitutions[input]) {
+        const alternatives = substitutions[input].map(sub => `<li>${sub}</li>`).join('');
+        resultDiv.innerHTML = `<strong>Substitutes for "<span style="color: #28a745;">${input}</span>":</strong><ul>${alternatives}</ul>`;
+      } else {
+        resultDiv.innerHTML = `<div class="no-result">No substitutes found for "<span style="color: #e03e2d;">${input}</span>".</div>`;
+      }
+    }
+  </script>
+
+</body>
+</html>

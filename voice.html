@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Voice-Based Recipe Generator</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #0f172a;
+      color: #f8fafc;
+      padding: 40px;
+    }
+    h1, h2 {
+      color: #38bdf8;
+    }
+    .card {
+      background-color: #1e293b;
+      padding: 20px;
+      margin-top: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+    button {
+      padding: 10px 15px;
+      background-color: #38bdf8;
+      color: #0f172a;
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0ea5e9;
+    }
+    ul {
+      list-style: none;
+      padding-left: 0;
+    }
+    li {
+      margin: 10px 0;
+    }
+    a {
+      color: #bae6fd;
+    }
+    .food-gallery img {
+      width: 100px;
+      height: 100px;
+      margin: 10px;
+      border-radius: 10px;
+    }
+    .recipe-image {
+      width: 200px;  /* Adjusted size */
+      height: auto;
+      border-radius: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>🎤 Voice-Based Recipe Generator</h1>
+
+  <div class="card">
+    <h2>1. Speak Ingredients</h2>
+    <button id="start-voice">Start Speaking</button>
+    <p id="spoken-text"></p>
+  </div>
+
+  <div class="food-gallery">
+    <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=400&q=80" alt="Food 1">
+    <img src="https://images.unsplash.com/photo-1506084868230-bb9d95c24759?auto=format&fit=crop&w=400&q=80" alt="Food 3">
+    <img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=400&q=80" alt="Food 4">
+    <img src="https://images.unsplash.com/photo-1600891964599-f61ba0e24092?auto=format&fit=crop&w=400&q=80" alt="Food 2">
+    <img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=400&q=80" alt="Food 4">
+  </div>
+
+  <div class="card" id="results" style="display:none;">
+    <h2>Detected Foods:</h2>
+    <ul id="food-list"></ul>
+    <h2>Recipe Suggestions:</h2>
+    <ul id="recipe-list"></ul>
+  </div>
+
+  <script>
+    // Show the results on the page after fetching recipes
+    async function showResults(data) {
+      if (data.foods) {
+        document.getElementById('results').style.display = 'block';
+        document.getElementById('food-list').innerHTML = data.foods.map(f => `<li>${f}</li>`).join('');
+        document.getElementById('recipe-list').innerHTML = data.recipes.map(r => 
+          `<li>
+            <a href="${r.sourceUrl}" target="_blank">${r.title}</a><br>
+            <img src="${r.image}" alt="${r.title}" class="recipe-image">
+          </li>`
+        ).join('');
+      } else if (data.error) {
+        alert("Error: " + data.error);
+      }
+    }
+
+    // Start voice recognition and fetch recipes based on the voice input
+    document.getElementById('start-voice').onclick = async () => {
+      const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+      recognition.lang = 'en-US';
+      recognition.start();
+
+      recognition.onresult = async (event) => {
+        const text = event.results[0][0].transcript;
+        document.getElementById('spoken-text').innerText = "You said: " + text;
+        const cleanedText = text.toLowerCase().replace(/[^a-z,\s]/g, '');
+
+        // Fetch recipes based on the cleaned ingredients from voice input
+        const apiKey = '193177cf1cc2429ebd8d345f63c74d79'; // Replace with your Spoonacular API key
+        const url = `https://api.spoonacular.com/recipes/findByIngredients?ingredients=${encodeURIComponent(cleanedText)}&number=5&apiKey=${apiKey}`;
+
+        const res = await fetch(url);
+
+        if (res.ok) {
+          const data = await res.json();
+          showResults({ foods: [cleanedText], recipes: data });
+        } else {
+          document.getElementById('spoken-text').innerText = "Error fetching recipes.";
+        }
+      };
+
+      recognition.onerror = (e) => {
+        document.getElementById('spoken-text').innerText = "Voice error: " + e.error;
+      };
+    };
+  </script>
+</body>
+</html>
